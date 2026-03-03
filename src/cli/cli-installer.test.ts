@@ -21,7 +21,7 @@ describe("runCliInstaller", () => {
     console.error = originalConsoleError
   })
 
-  it("runs auth and provider setup steps when openai or copilot are enabled without gemini", async () => {
+  it("runs auth and provider setup steps when opencode-go is enabled", async () => {
     //#given
     const addAuthPluginsSpy = spyOn(configManager, "addAuthPlugins").mockResolvedValue({
       success: true,
@@ -42,6 +42,9 @@ describe("runCliInstaller", () => {
         hasGemini: false,
         hasCopilot: false,
         hasOpencodeZen: false,
+        hasOpencodeGo: false,
+        hasBailianCodingPlan: false,
+        hasMinimax: false,
         hasZaiCodingPlan: false,
         hasKimiForCoding: false,
       }),
@@ -62,8 +65,11 @@ describe("runCliInstaller", () => {
       claude: "no",
       openai: "yes",
       gemini: "no",
-      copilot: "yes",
+      copilot: "no",
       opencodeZen: "no",
+      opencodeGo: "yes",
+      bailianCodingPlan: "no",
+      minimax: "no",
       zaiCodingPlan: "no",
       kimiForCoding: "no",
     }

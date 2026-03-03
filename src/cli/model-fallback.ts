@@ -7,21 +7,17 @@ import type { InstallConfig } from "./types"
 import type { AgentConfig, CategoryConfig, GeneratedOmoConfig } from "./model-fallback-types"
 import { toProviderAvailability } from "./provider-availability"
 import {
-	getSisyphusFallbackChain,
-	isAnyFallbackEntryAvailable,
-	isRequiredModelAvailable,
-	isRequiredProviderAvailable,
-	resolveModelFromChain,
+  getSisyphusFallbackChain,
+  isAnyFallbackEntryAvailable,
+  isRequiredModelAvailable,
+  isRequiredProviderAvailable,
+  resolveModelFromChain,
 } from "./fallback-chain-resolution"
 
 export type { GeneratedOmoConfig } from "./model-fallback-types"
 
-const ZAI_MODEL = "zai-coding-plan/glm-4.7"
-
 const ULTIMATE_FALLBACK = "opencode/glm-4.7-free"
 const SCHEMA_URL = "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/dev/assets/oh-my-opencode.schema.json"
-
-
 
 export function generateModelConfig(config: InstallConfig): GeneratedOmoConfig {
   const avail = toProviderAvailability(config)
@@ -30,6 +26,9 @@ export function generateModelConfig(config: InstallConfig): GeneratedOmoConfig {
     avail.native.openai ||
     avail.native.gemini ||
     avail.opencodeZen ||
+    avail.opencodeGo ||
+    avail.bailianCodingPlan ||
+    avail.minimax ||
     avail.copilot ||
     avail.zai ||
     avail.kimiForCoding
@@ -52,24 +51,6 @@ export function generateModelConfig(config: InstallConfig): GeneratedOmoConfig {
   const categories: Record<string, CategoryConfig> = {}
 
   for (const [role, req] of Object.entries(CLI_AGENT_MODEL_REQUIREMENTS)) {
-    if (role === "librarian" && avail.zai) {
-      agents[role] = { model: ZAI_MODEL }
-      continue
-    }
-
-    if (role === "explore") {
-      if (avail.native.claude) {
-        agents[role] = { model: "anthropic/claude-haiku-4-5" }
-      } else if (avail.opencodeZen) {
-        agents[role] = { model: "opencode/claude-haiku-4-5" }
-      } else if (avail.copilot) {
-        agents[role] = { model: "github-copilot/gpt-5-mini" }
-      } else {
-        agents[role] = { model: "opencode/gpt-5-nano" }
-      }
-      continue
-    }
-
     if (role === "sisyphus") {
       const fallbackChain = getSisyphusFallbackChain()
       if (req.requiresAnyModel && !isAnyFallbackEntryAvailable(fallbackChain, avail)) {

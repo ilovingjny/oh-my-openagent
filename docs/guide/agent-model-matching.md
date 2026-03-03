@@ -2,6 +2,8 @@
 
 > **For agents and users**: Why each agent needs a specific model — and how to customize without breaking things.
 
+**Note:** The installer now reflects these provider IDs in generated fallback chains. Authenticate each provider in OpenCode (`opencode auth login`) to activate them.
+
 ## The Core Insight: Models Are Developers
 
 Think of AI models as developers on a team. Each has a different brain, different personality, different strengths. **A model isn't just "smarter" or "dumber." It thinks differently.** Give the same instruction to Claude and GPT, and they'll interpret it in fundamentally different ways.
@@ -64,6 +66,7 @@ These agents have Claude-optimized prompts — long, detailed, mechanics-driven.
 |-------|------|----------------|-------|
 | **Sisyphus** | Main orchestrator | Claude Opus → Kimi K2.5 → GLM 5 | **No GPT prompt.** Claude-family only. |
 | **Metis** | Plan gap analyzer | Claude Opus → Kimi K2.5 → GPT-5.2 → Gemini 3 Pro | Claude preferred, GPT acceptable fallback. |
+| **Scribe** | Document writer | Kimi K2.5 → GLM 5 → Claude Sonnet → GPT-5.2 | Structured documents (reports, proposals, specs). Supports Korean conventions. |
 
 ### Dual-Prompt Agents → Claude preferred, GPT supported
 
@@ -80,7 +83,7 @@ These agents are built for GPT's principle-driven style. Their prompts assume au
 
 | Agent | Role | Fallback Chain | Notes |
 |-------|------|----------------|-------|
-| **Hephaestus** | Autonomous deep worker | GPT-5.3 Codex only | No fallback. Requires GPT access. The craftsman. |
+| **Hephaestus** | Autonomous deep worker | GPT-5.3 Codex → GLM 5 (opencode-go) → MiniMax M2.5 → Qwen3.5 Plus | Requires GPT or opencode-go/bailian-coding-plan/opencode. See note below. |
 | **Oracle** | Architecture consultant | GPT-5.2 → Gemini 3 Pro → Claude Opus | Read-only high-IQ consultation. |
 | **Momus** | Ruthless reviewer | GPT-5.2 → Claude Opus → Gemini 3 Pro | Verification and plan review. |
 
@@ -96,44 +99,39 @@ These agents do grep, search, and retrieval. They intentionally use the fastest,
 
 ---
 
-## Model Families
+## Additional Providers
 
-### Claude Family
+Provider IDs are standardized to the connected OpenCode provider IDs:
 
-Communicative, instruction-following, structured output. Best for agents that need to follow complex multi-step prompts.
+| Provider ID | Typical Models | Notes |
+|-------------|----------------|-------|
+| `opencode-go` | `glm-5`, `kimi-k2.5`, `minimax-m2.5` | Primary non-GPT fallback route |
+| `bailian-coding-plan` | `qwen3.5-plus`, `glm-5`, `kimi-k2.5`, `MiniMax-M2.5` | `mstudio`-compatible provider ID |
+| `minimax` | `MiniMax-M2.5` | `minimax.io` provider ID |
+| `kimi-for-coding` | `k2p5` | Dedicated Kimi endpoint |
 
-| Model | Strengths |
-|-------|-----------|
-| **Claude Opus 4.6** | Best overall. Highest compliance with complex prompts. Default for Sisyphus. |
-| **Claude Sonnet 4.6** | Faster, cheaper. Good balance for everyday tasks. |
-| **Claude Haiku 4.5** | Fast and cheap. Good for quick tasks and utility work. |
-| **Kimi K2.5** | Behaves very similarly to Claude. Great all-rounder at lower cost. Default for Atlas. |
-| **GLM 5** | Claude-like behavior. Solid for orchestration tasks. |
+Use `opencode auth login` to authenticate these providers in OpenCode.
 
-### GPT Family
+### ChatGPT-First Groups
 
-Principle-driven, explicit reasoning, deep technical capability. Best for agents that work autonomously on complex problems.
+`hephaestus`, `oracle`, `momus`, and categories `ultrabrain`, `deep` keep GPT first.
+Their next fallback is `qwen3.5-plus` on `bailian-coding-plan` (replacing prior `glm-5` second position).
 
-| Model | Strengths |
-|-------|-----------|
-| **GPT-5.3 Codex** | Deep coding powerhouse. Autonomous exploration. Required for Hephaestus. |
-| **GPT-5.2** | High intelligence, strategic reasoning. Default for Oracle and Momus. |
-| **GPT-5-Nano** | Ultra-cheap, fast. Good for simple utility tasks. |
+#### Hephaestus Fallback Note (Intentional)
 
-### Other Models
+Hephaestus now has a broader fallback chain beyond GPT-5.3 Codex. This is **intentional**:
+- `opencode-go` subscribers fall back to **GLM 5** — GLM is better suited than MiniMax for Hephaestus's autonomous deep-work style.
+- `bailian-coding-plan`, `minimax`, `opencode` subscribers fall back to **MiniMax M2.5**.
+- `bailian-coding-plan` may also use **Qwen3.5 Plus** as a second fallback.
 
-| Model | Strengths |
-|-------|-----------|
-| **Gemini 3 Pro** | Excels at visual/frontend tasks. Different reasoning style. Default for `visual-engineering` and `artistry`. |
-| **Gemini 3 Flash** | Fast. Good for doc search and light tasks. |
-| **Grok Code Fast 1** | Blazing fast code grep. Default for Explore agent. |
-| **MiniMax M2.5** | Fast and smart. Good for utility tasks and search/retrieval. |
+This replaces the prior behavior where opencode-go and bailian-coding-plan shared the same MiniMax fallback slot.
 
-### About Free-Tier Fallbacks
+### General Priority
 
-You may see model names like `kimi-k2.5-free`, `minimax-m2.5-free`, or `big-pickle` (GLM 4.6) in the source code or logs. These are free-tier versions of the same model families, served through the OpenCode Zen provider. They exist as lower-priority entries in fallback chains.
+Most non-GPT-first agents and categories prioritize:
 
-You don't need to configure them. The system includes them so it degrades gracefully when you don't have every paid subscription. If you have the paid version, the paid version is always preferred.
+`opencode-go` → `bailian-coding-plan` → `minimax` (only in minimax chains) → `kimi-for-coding`  
+Then late fallbacks: `opencode/openai/github-copilot/google/anthropic/zai-coding-plan`.
 
 ---
 

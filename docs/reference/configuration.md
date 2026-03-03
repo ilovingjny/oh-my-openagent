@@ -247,33 +247,62 @@ Disable categories: `{ "disabled_categories": ["ultrabrain"] }`
 2. **Provider fallback chain** — tries each provider in priority order until available
 3. **System default** — falls back to OpenCode's configured default model
 
+#### Canonical Providers and Models
+
+These providers are available for runtime model resolution:
+
+| Canonical Provider ID | Description |
+|----------------------|-------------|
+| `openai` | OpenAI / ChatGPT models |
+| `opencode` | OpenCode hosted models |
+| `opencode-go` | OpenCode Go provider |
+| `bailian-coding-plan` | Bailian coding plan (mstudio-compatible) |
+| `minimax` | MiniMax provider (minimax.io) |
+| `kimi-for-coding` | Moonshot Kimi provider |
+| `github-copilot` | GitHub Copilot provider |
+| `google` | Google Gemini provider |
+| `anthropic` | Anthropic Claude provider |
+| `zai-coding-plan` | Z.ai coding plan provider |
+
+These models can be referenced by their canonical IDs:
+
+| Canonical Model ID | Maps To |
+|-------------------|---------|
+| `qwen3.5-plus` | bailian-coding-plan/qwen3.5-plus |
+| `glm-5` | opencode-go/glm-5 or bailian-coding-plan/glm-5 |
+| `kimi-k2.5` | opencode-go/kimi-k2.5 or bailian-coding-plan/kimi-k2.5 |
+| `k2p5` | kimi-for-coding/k2p5 |
+| `minimax-m2.5` | minimax/MiniMax-M2.5 (or bailian-coding-plan/MiniMax-M2.5) |
+
+> **Note**: The installer stores provider selections and generates fallback chains using these canonical IDs. Authenticate providers in OpenCode with `opencode auth login`.
+
 #### Agent Provider Chains
 
 | Agent | Default Model | Provider Priority |
 |-------|---------------|-------------------|
-| **Sisyphus** | `claude-opus-4-6` | anthropic → github-copilot → opencode → kimi-for-coding → zai-coding-plan |
-| **Hephaestus** | `gpt-5.3-codex` | openai → github-copilot → opencode |
-| **oracle** | `gpt-5.2` | openai → google → anthropic (via github-copilot/opencode) |
-| **librarian** | `glm-4.7` | zai-coding-plan → opencode → anthropic |
-| **explore** | `grok-code-fast-1` | github-copilot → anthropic/opencode → opencode |
-| **multimodal-looker** | `gemini-3-flash` | google → openai → zai-coding-plan → kimi-for-coding → opencode → anthropic |
-| **Prometheus** | `claude-opus-4-6` | anthropic → kimi-for-coding → opencode → openai → google |
-| **Metis** | `claude-opus-4-6` | anthropic → kimi-for-coding → opencode → openai → google |
-| **Momus** | `gpt-5.2` | openai → anthropic → google (via github-copilot/opencode) |
-| **Atlas** | `k2p5` | kimi-for-coding → opencode → anthropic → openai → google |
+| **sisyphus** | `kimi-k2.5` | opencode-go → bailian-coding-plan → opencode → zai-coding-plan → minimax → kimi-for-coding → openai → github-copilot → anthropic |
+| **hephaestus** | `gpt-5.3-codex` | openai → bailian-coding-plan → opencode-go → minimax → opencode → kimi-for-coding |
+| **oracle** | `gpt-5.2` | openai → github-copilot → bailian-coding-plan → opencode-go → minimax → opencode → kimi-for-coding → google → anthropic |
+| **librarian** | `minimax-m2.5` | opencode-go → bailian-coding-plan → minimax → opencode → zai-coding-plan → kimi-for-coding → github-copilot → google → anthropic |
+| **explore** | `minimax-m2.5` | opencode-go → bailian-coding-plan → minimax → opencode → kimi-for-coding → github-copilot → anthropic |
+| **multimodal-looker** | `kimi-k2.5` | opencode-go → bailian-coding-plan → kimi-for-coding → opencode → zai-coding-plan → minimax → openai → github-copilot → google |
+| **prometheus** | `kimi-k2.5` | opencode-go → bailian-coding-plan → opencode → zai-coding-plan → minimax → kimi-for-coding → openai → github-copilot → anthropic → google |
+| **metis** | `kimi-k2.5` | opencode-go → bailian-coding-plan → opencode → zai-coding-plan → minimax → kimi-for-coding → openai → github-copilot → anthropic → google |
+| **momus** | `gpt-5.2` | openai → github-copilot → bailian-coding-plan → opencode-go → minimax → opencode → kimi-for-coding → google → anthropic |
+| **atlas** | `kimi-k2.5` | opencode-go → bailian-coding-plan → kimi-for-coding → minimax → opencode → zai-coding-plan → openai → github-copilot → anthropic → google |
 
 #### Category Provider Chains
 
 | Category | Default Model | Provider Priority |
 |----------|---------------|-------------------|
-| **visual-engineering** | `gemini-3-pro` | google → zai-coding-plan → anthropic → kimi-for-coding |
-| **ultrabrain** | `gpt-5.3-codex` | openai → google → anthropic (via github-copilot/opencode) |
-| **deep** | `gpt-5.3-codex` | openai → anthropic → google (via github-copilot/opencode) |
-| **artistry** | `gemini-3-pro` | google → anthropic → openai (via github-copilot/opencode) |
-| **quick** | `claude-haiku-4-5` | anthropic → google → opencode (via github-copilot/opencode) |
-| **unspecified-low** | `claude-sonnet-4-6` | anthropic → openai → google (via github-copilot/opencode) |
-| **unspecified-high** | `claude-opus-4-6` | anthropic → openai → google (via github-copilot/opencode) |
-| **writing** | `k2p5` | kimi-for-coding → google → anthropic |
+| **visual-engineering** | `glm-5` | opencode-go → bailian-coding-plan → opencode → zai-coding-plan → minimax → kimi-for-coding → github-copilot → google → openai → anthropic |
+| **ultrabrain** | `gpt-5.3-codex` | openai → bailian-coding-plan → opencode-go → minimax → opencode → kimi-for-coding → github-copilot → google → anthropic |
+| **deep** | `gpt-5.3-codex` | openai → bailian-coding-plan → opencode-go → minimax → opencode → kimi-for-coding → github-copilot → google → anthropic |
+| **artistry** | `kimi-k2.5` | opencode-go → bailian-coding-plan → kimi-for-coding → minimax → opencode → zai-coding-plan → openai → github-copilot → google → anthropic |
+| **quick** | `minimax-m2.5` | opencode-go → bailian-coding-plan → minimax → opencode → kimi-for-coding → github-copilot → google → anthropic |
+| **unspecified-low** | `kimi-k2.5` | opencode-go → bailian-coding-plan → minimax → opencode → kimi-for-coding → zai-coding-plan → openai → github-copilot → google → anthropic |
+| **unspecified-high** | `kimi-k2.5` | opencode-go → bailian-coding-plan → opencode → zai-coding-plan → minimax → kimi-for-coding → openai → github-copilot → google → anthropic |
+| **writing** | `kimi-k2.5` | opencode-go → bailian-coding-plan → kimi-for-coding → minimax → opencode → zai-coding-plan → openai → github-copilot → google → anthropic |
 
 Run `bunx oh-my-opencode doctor --verbose` to see effective model resolution for your config.
 

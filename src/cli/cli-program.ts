@@ -29,6 +29,9 @@ program
   .option("--gemini <value>", "Gemini integration: no, yes")
   .option("--copilot <value>", "GitHub Copilot subscription: no, yes")
   .option("--opencode-zen <value>", "OpenCode Zen access: no, yes (default: no)")
+  .option("--opencode-go <value>", "OpenCode Go provider access: no, yes (default: no)")
+  .option("--bailian-coding-plan <value>", "Bailian Coding Plan (mstudio) access: no, yes (default: no)")
+  .option("--minimax <value>", "MiniMax (minimax.io) provider access: no, yes (default: no)")
   .option("--zai-coding-plan <value>", "Z.ai Coding Plan subscription: no, yes (default: no)")
   .option("--kimi-for-coding <value>", "Kimi For Coding subscription: no, yes (default: no)")
   .option("--skip-auth", "Skip authentication setup hints")
@@ -38,14 +41,17 @@ Examples:
   $ bunx oh-my-opencode install --no-tui --claude=max20 --openai=yes --gemini=yes --copilot=no
   $ bunx oh-my-opencode install --no-tui --claude=no --gemini=no --copilot=yes --opencode-zen=yes
 
-Model Providers (Priority: Native > Copilot > OpenCode Zen > Z.ai > Kimi):
-  Claude        Native anthropic/ models (Opus, Sonnet, Haiku)
-  OpenAI        Native openai/ models (GPT-5.2 for Oracle)
-  Gemini        Native google/ models (Gemini 3 Pro, Flash)
-  Copilot       github-copilot/ models (fallback)
-  OpenCode Zen  opencode/ models (opencode/claude-opus-4-6, etc.)
-   Z.ai          zai-coding-plan/glm-5 (visual-engineering fallback)
-  Kimi          kimi-for-coding/k2p5 (Sisyphus/Prometheus fallback)
+Model Providers (Priority: OpenAI-first agents keep GPT first; others prefer OpenCode Go -> Bailian -> MiniMax -> Kimi):
+  OpenAI        Native openai/ models (GPT-first agents)
+  OpenCode Go   opencode-go/ models (glm-5, kimi-k2.5, minimax-m2.5)
+  Bailian       bailian-coding-plan/ models (mstudio-compatible, qwen3.5-plus)
+  MiniMax       minimax/MiniMax-M2.5 (minimax.io)
+  Kimi          kimi-for-coding/k2p5
+  OpenCode Zen  opencode/ models (fallback)
+  Copilot       github-copilot/ models (late fallback)
+  Gemini        Native google/ models (late fallback)
+  Claude        Native anthropic/ models (late fallback)
+  Z.ai          zai-coding-plan/glm-5 (late fallback)
 `)
   .action(async (options) => {
     const args: InstallArgs = {
@@ -55,6 +61,9 @@ Model Providers (Priority: Native > Copilot > OpenCode Zen > Z.ai > Kimi):
       gemini: options.gemini,
       copilot: options.copilot,
       opencodeZen: options.opencodeZen,
+      opencodeGo: options.opencodeGo,
+      bailianCodingPlan: options.bailianCodingPlan,
+      minimax: options.minimax,
       zaiCodingPlan: options.zaiCodingPlan,
       kimiForCoding: options.kimiForCoding,
       skipAuth: options.skipAuth ?? false,

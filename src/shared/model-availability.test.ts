@@ -315,6 +315,24 @@ describe("fuzzyMatchModel", () => {
 		expect(result).toBe("openai/gpt-5.2")
 	})
 
+	it("resolves minimax/minimax-m2.5 to minimax/MiniMax-M2.5 (case insensitive)", () => {
+		const available = new Set(["minimax/MiniMax-M2.5"])
+		const result = fuzzyMatchModel("minimax/minimax-m2.5", available)
+		expect(result).toBe("minimax/MiniMax-M2.5")
+	})
+
+	it("resolves opencode-go/kimi-k2.5 when available", () => {
+		const available = new Set(["opencode-go/kimi-k2.5"])
+		const result = fuzzyMatchModel("opencode-go/kimi-k2.5", available)
+		expect(result).toBe("opencode-go/kimi-k2.5")
+	})
+
+	it("resolves opencode/kimi-k2.5 to opencode/kimi-k2.5-free when paid unavailable", () => {
+		const available = new Set(["opencode/kimi-k2.5-free"])
+		const result = fuzzyMatchModel("opencode/kimi-k2.5", available)
+		expect(result).toBe("opencode/kimi-k2.5-free")
+	})
+
 	// given available models with exact match and longer variants
 	// when searching for exact match
 	// then return exact match first

@@ -62,7 +62,9 @@ export async function runCliInstaller(args: InstallArgs, version: string): Promi
 
   if (isUpdate) {
     const initial = detectedToInitialValues(detected)
-    printInfo(`Current config: Claude=${initial.claude}, Gemini=${initial.gemini}`)
+    printInfo(
+      `Current config: Claude=${initial.claude}, OpenCodeGo=${initial.opencodeGo}, Bailian=${initial.bailianCodingPlan}, MiniMax=${initial.minimax}, Gemini=${initial.gemini}`,
+    )
   }
 
   const config = argsToConfig(args)
@@ -77,7 +79,11 @@ export async function runCliInstaller(args: InstallArgs, version: string): Promi
     `Plugin ${isUpdate ? "verified" : "added"} ${SYMBOLS.arrow} ${color.dim(pluginResult.configPath)}`,
   )
 
-  const needsProviderSetup = config.hasGemini || config.hasOpenAI || config.hasCopilot
+  const needsProviderSetup =
+    config.hasGemini ||
+    config.hasOpencodeGo ||
+    config.hasBailianCodingPlan ||
+    config.hasMinimax
 
   if (needsProviderSetup) {
     printStep(step++, totalSteps, "Adding auth plugins...")
@@ -128,7 +134,12 @@ export async function runCliInstaller(args: InstallArgs, version: string): Promi
     !config.hasOpenAI &&
     !config.hasGemini &&
     !config.hasCopilot &&
-    !config.hasOpencodeZen
+    !config.hasOpencodeZen &&
+    !config.hasOpencodeGo &&
+    !config.hasBailianCodingPlan &&
+    !config.hasMinimax &&
+    !config.hasZaiCodingPlan &&
+    !config.hasKimiForCoding
   ) {
     printWarning("No model providers configured. Using opencode/big-pickle as fallback.")
   }
@@ -152,12 +163,29 @@ export async function runCliInstaller(args: InstallArgs, version: string): Promi
   console.log(color.dim("oMoMoMoMo... Enjoy!"))
   console.log()
 
-  if ((config.hasClaude || config.hasGemini || config.hasCopilot) && !args.skipAuth) {
+  if (
+    (
+      config.hasClaude ||
+      config.hasGemini ||
+      config.hasCopilot ||
+      config.hasOpencodeGo ||
+      config.hasBailianCodingPlan ||
+      config.hasMinimax ||
+      config.hasZaiCodingPlan ||
+      config.hasKimiForCoding
+    ) &&
+    !args.skipAuth
+  ) {
     printBox(
       `Run ${color.cyan("opencode auth login")} and select your provider:\n` +
         (config.hasClaude ? `  ${SYMBOLS.bullet} Anthropic ${color.gray("→ Claude Pro/Max")}\n` : "") +
         (config.hasGemini ? `  ${SYMBOLS.bullet} Google ${color.gray("→ OAuth with Antigravity")}\n` : "") +
-        (config.hasCopilot ? `  ${SYMBOLS.bullet} GitHub ${color.gray("→ Copilot")}` : ""),
+        (config.hasCopilot ? `  ${SYMBOLS.bullet} GitHub ${color.gray("→ Copilot")}\n` : "") +
+        (config.hasOpencodeGo ? `  ${SYMBOLS.bullet} OpenCode Go ${color.gray("→ opencode-go")}\n` : "") +
+        (config.hasBailianCodingPlan ? `  ${SYMBOLS.bullet} Bailian Coding Plan ${color.gray("→ bailian-coding-plan (mstudio)")}\n` : "") +
+        (config.hasMinimax ? `  ${SYMBOLS.bullet} MiniMax ${color.gray("→ minimax.io")}\n` : "") +
+        (config.hasZaiCodingPlan ? `  ${SYMBOLS.bullet} Z.ai ${color.gray("→ zai-coding-plan")}\n` : "") +
+        (config.hasKimiForCoding ? `  ${SYMBOLS.bullet} Kimi For Coding ${color.gray("→ kimi-for-coding")}` : ""),
       "Authenticate Your Providers",
     )
   }

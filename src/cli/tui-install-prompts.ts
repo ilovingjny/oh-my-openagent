@@ -32,9 +32,9 @@ export async function promptInstallConfig(detected: DetectedConfig): Promise<Ins
   const claude = await selectOrCancel<ClaudeSubscription>({
     message: "Do you have a Claude Pro/Max subscription?",
     options: [
-      { value: "no", label: "No", hint: "Will use opencode/big-pickle as fallback" },
-      { value: "yes", label: "Yes (standard)", hint: "Claude Opus 4.5 for orchestration" },
-      { value: "max20", label: "Yes (max20 mode)", hint: "Full power with Claude Sonnet 4.6 for Librarian" },
+      { value: "no", label: "No", hint: "Will use fallback chains" },
+      { value: "yes", label: "Yes (standard)", hint: "Claude fallback for non-GPT-first agents" },
+      { value: "max20", label: "Yes (max20 mode)", hint: "Full Claude access" },
     ],
     initialValue: initial.claude,
   })
@@ -43,38 +43,58 @@ export async function promptInstallConfig(detected: DetectedConfig): Promise<Ins
   const openai = await selectOrCancel({
     message: "Do you have an OpenAI/ChatGPT Plus subscription?",
     options: [
-      { value: "no", label: "No", hint: "Oracle will use fallback models" },
-      { value: "yes", label: "Yes", hint: "GPT-5.2 for Oracle (high-IQ debugging)" },
+      { value: "no", label: "No", hint: "GPT-first agents will use qwen3.5-plus fallback" },
+      { value: "yes", label: "Yes", hint: "GPT-first agents keep OpenAI first" },
     ],
     initialValue: initial.openai,
   })
   if (!openai) return null
 
-  const gemini = await selectOrCancel({
-    message: "Will you integrate Google Gemini?",
+  const opencodeGo = await selectOrCancel({
+    message: "Do you use OpenCode Go provider?",
     options: [
-      { value: "no", label: "No", hint: "Frontend/docs agents will use fallback" },
-      { value: "yes", label: "Yes", hint: "Beautiful UI generation with Gemini 3 Pro" },
+      { value: "yes", label: "Yes", hint: "Preferred provider for most non-GPT agents" },
+      { value: "no", label: "No", hint: "Skip opencode-go fallback" },
     ],
-    initialValue: initial.gemini,
+    initialValue: initial.opencodeGo,
   })
-  if (!gemini) return null
+  if (!opencodeGo) return null
 
-  const copilot = await selectOrCancel({
-    message: "Do you have a GitHub Copilot subscription?",
+  const bailianCodingPlan = await selectOrCancel({
+    message: "Do you use Bailian Coding Plan (mstudio)?",
     options: [
-      { value: "no", label: "No", hint: "Only native providers will be used" },
-      { value: "yes", label: "Yes", hint: "Fallback option when native providers unavailable" },
+      { value: "yes", label: "Yes", hint: "Secondary preferred provider (bailian-coding-plan)" },
+      { value: "no", label: "No", hint: "Skip bailian-coding-plan fallback" },
     ],
-    initialValue: initial.copilot,
+    initialValue: initial.bailianCodingPlan,
   })
-  if (!copilot) return null
+  if (!bailianCodingPlan) return null
+
+  const minimax = await selectOrCancel({
+    message: "Do you use MiniMax provider (minimax.io)?",
+    options: [
+      { value: "yes", label: "Yes", hint: "Used in minimax-specific fallback chains" },
+      { value: "no", label: "No", hint: "Skip minimax provider fallback" },
+    ],
+    initialValue: initial.minimax,
+  })
+  if (!minimax) return null
+
+  const kimiForCoding = await selectOrCancel({
+    message: "Do you have a Kimi For Coding subscription?",
+    options: [
+      { value: "yes", label: "Yes", hint: "k2p5 fallback for non-GPT-first agents" },
+      { value: "no", label: "No", hint: "Skip kimi-for-coding fallback" },
+    ],
+    initialValue: initial.kimiForCoding,
+  })
+  if (!kimiForCoding) return null
 
   const opencodeZen = await selectOrCancel({
     message: "Do you have access to OpenCode Zen (opencode/ models)?",
     options: [
-      { value: "no", label: "No", hint: "Will use other configured providers" },
-      { value: "yes", label: "Yes", hint: "opencode/claude-opus-4-6, opencode/gpt-5.2, etc." },
+      { value: "yes", label: "Yes", hint: "Includes big-pickle and gpt-5-nano fallback" },
+      { value: "no", label: "No", hint: "Will use other providers only" },
     ],
     initialValue: initial.opencodeZen,
   })
@@ -83,22 +103,32 @@ export async function promptInstallConfig(detected: DetectedConfig): Promise<Ins
   const zaiCodingPlan = await selectOrCancel({
     message: "Do you have a Z.ai Coding Plan subscription?",
     options: [
-      { value: "no", label: "No", hint: "Will use other configured providers" },
-      { value: "yes", label: "Yes", hint: "Fallback for Librarian and Multimodal Looker" },
+      { value: "yes", label: "Yes", hint: "Late fallback (glm family)" },
+      { value: "no", label: "No", hint: "Skip zai-coding-plan fallback" },
     ],
     initialValue: initial.zaiCodingPlan,
   })
   if (!zaiCodingPlan) return null
 
-  const kimiForCoding = await selectOrCancel({
-    message: "Do you have a Kimi For Coding subscription?",
+  const gemini = await selectOrCancel({
+    message: "Will you integrate Google Gemini?",
     options: [
-      { value: "no", label: "No", hint: "Will use other configured providers" },
-      { value: "yes", label: "Yes", hint: "Kimi K2.5 for Sisyphus/Prometheus fallback" },
+      { value: "no", label: "No", hint: "Gemini fallback disabled" },
+      { value: "yes", label: "Yes", hint: "Gemini stays as late fallback" },
     ],
-    initialValue: initial.kimiForCoding,
+    initialValue: initial.gemini,
   })
-  if (!kimiForCoding) return null
+  if (!gemini) return null
+
+  const copilot = await selectOrCancel({
+    message: "Do you have a GitHub Copilot subscription?",
+    options: [
+      { value: "no", label: "No", hint: "No github-copilot fallback" },
+      { value: "yes", label: "Yes", hint: "Late fallback route" },
+    ],
+    initialValue: initial.copilot,
+  })
+  if (!copilot) return null
 
   return {
     hasClaude: claude !== "no",
@@ -107,6 +137,9 @@ export async function promptInstallConfig(detected: DetectedConfig): Promise<Ins
     hasGemini: gemini === "yes",
     hasCopilot: copilot === "yes",
     hasOpencodeZen: opencodeZen === "yes",
+    hasOpencodeGo: opencodeGo === "yes",
+    hasBailianCodingPlan: bailianCodingPlan === "yes",
+    hasMinimax: minimax === "yes",
     hasZaiCodingPlan: zaiCodingPlan === "yes",
     hasKimiForCoding: kimiForCoding === "yes",
   }

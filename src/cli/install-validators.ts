@@ -32,12 +32,15 @@ export function formatConfigSummary(config: InstallConfig): string {
 
   const claudeDetail = config.hasClaude ? (config.isMax20 ? "max20" : "standard") : undefined
   lines.push(formatProvider("Claude", config.hasClaude, claudeDetail))
-  lines.push(formatProvider("OpenAI/ChatGPT", config.hasOpenAI, "GPT-5.2 for Oracle"))
-  lines.push(formatProvider("Gemini", config.hasGemini))
-  lines.push(formatProvider("GitHub Copilot", config.hasCopilot, "fallback"))
+  lines.push(formatProvider("OpenAI/ChatGPT", config.hasOpenAI, "GPT-first agents"))
+  lines.push(formatProvider("Gemini", config.hasGemini, "late fallback"))
+  lines.push(formatProvider("GitHub Copilot", config.hasCopilot, "late fallback"))
   lines.push(formatProvider("OpenCode Zen", config.hasOpencodeZen, "opencode/ models"))
-  lines.push(formatProvider("Z.ai Coding Plan", config.hasZaiCodingPlan, "Librarian/Multimodal"))
-  lines.push(formatProvider("Kimi For Coding", config.hasKimiForCoding, "Sisyphus/Prometheus fallback"))
+  lines.push(formatProvider("OpenCode Go", config.hasOpencodeGo, "glm-5, kimi-k2.5, minimax-m2.5"))
+  lines.push(formatProvider("Bailian Coding Plan", config.hasBailianCodingPlan, "mstudio-compatible, qwen3.5-plus"))
+  lines.push(formatProvider("MiniMax", config.hasMinimax, "minimax.io"))
+  lines.push(formatProvider("Z.ai Coding Plan", config.hasZaiCodingPlan, "late fallback"))
+  lines.push(formatProvider("Kimi For Coding", config.hasKimiForCoding, "k2p5"))
 
   lines.push("")
   lines.push(color.dim("─".repeat(40)))
@@ -46,7 +49,7 @@ export function formatConfigSummary(config: InstallConfig): string {
   lines.push(color.bold(color.white("Model Assignment")))
   lines.push("")
   lines.push(`  ${SYMBOLS.info} Models auto-configured based on provider priority`)
-  lines.push(`  ${SYMBOLS.bullet} Priority: Native > Copilot > OpenCode Zen > Z.ai`)
+  lines.push(`  ${SYMBOLS.bullet} Priority: GPT-first agents keep OpenAI first; others prefer OpenCode Go -> Bailian -> MiniMax -> Kimi`)
 
   return lines.join("\n")
 }
@@ -139,6 +142,18 @@ export function validateNonTuiArgs(args: InstallArgs): { valid: boolean; errors:
     errors.push(`Invalid --opencode-zen value: ${args.opencodeZen} (expected: no, yes)`)
   }
 
+  if (args.opencodeGo !== undefined && !["no", "yes"].includes(args.opencodeGo)) {
+    errors.push(`Invalid --opencode-go value: ${args.opencodeGo} (expected: no, yes)`)
+  }
+
+  if (args.bailianCodingPlan !== undefined && !["no", "yes"].includes(args.bailianCodingPlan)) {
+    errors.push(`Invalid --bailian-coding-plan value: ${args.bailianCodingPlan} (expected: no, yes)`)
+  }
+
+  if (args.minimax !== undefined && !["no", "yes"].includes(args.minimax)) {
+    errors.push(`Invalid --minimax value: ${args.minimax} (expected: no, yes)`)
+  }
+
   if (args.zaiCodingPlan !== undefined && !["no", "yes"].includes(args.zaiCodingPlan)) {
     errors.push(`Invalid --zai-coding-plan value: ${args.zaiCodingPlan} (expected: no, yes)`)
   }
@@ -158,6 +173,9 @@ export function argsToConfig(args: InstallArgs): InstallConfig {
     hasGemini: args.gemini === "yes",
     hasCopilot: args.copilot === "yes",
     hasOpencodeZen: args.opencodeZen === "yes",
+    hasOpencodeGo: args.opencodeGo === "yes",
+    hasBailianCodingPlan: args.bailianCodingPlan === "yes",
+    hasMinimax: args.minimax === "yes",
     hasZaiCodingPlan: args.zaiCodingPlan === "yes",
     hasKimiForCoding: args.kimiForCoding === "yes",
   }
@@ -169,6 +187,9 @@ export function detectedToInitialValues(detected: DetectedConfig): {
   gemini: BooleanArg
   copilot: BooleanArg
   opencodeZen: BooleanArg
+  opencodeGo: BooleanArg
+  bailianCodingPlan: BooleanArg
+  minimax: BooleanArg
   zaiCodingPlan: BooleanArg
   kimiForCoding: BooleanArg
 } {
@@ -183,6 +204,9 @@ export function detectedToInitialValues(detected: DetectedConfig): {
     gemini: detected.hasGemini ? "yes" : "no",
     copilot: detected.hasCopilot ? "yes" : "no",
     opencodeZen: detected.hasOpencodeZen ? "yes" : "no",
+    opencodeGo: detected.hasOpencodeGo ? "yes" : "no",
+    bailianCodingPlan: detected.hasBailianCodingPlan ? "yes" : "no",
+    minimax: detected.hasMinimax ? "yes" : "no",
     zaiCodingPlan: detected.hasZaiCodingPlan ? "yes" : "no",
     kimiForCoding: detected.hasKimiForCoding ? "yes" : "no",
   }

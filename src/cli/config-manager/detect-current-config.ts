@@ -8,30 +8,68 @@ import { parseOpenCodeConfigFileWithError } from "./parse-opencode-config-file"
 function detectProvidersFromOmoConfig(): {
   hasOpenAI: boolean
   hasOpencodeZen: boolean
+  hasOpencodeGo: boolean
+  hasBailianCodingPlan: boolean
+  hasMinimax: boolean
   hasZaiCodingPlan: boolean
   hasKimiForCoding: boolean
 } {
   const omoConfigPath = getOmoConfigPath()
   if (!existsSync(omoConfigPath)) {
-    return { hasOpenAI: true, hasOpencodeZen: true, hasZaiCodingPlan: false, hasKimiForCoding: false }
+    return {
+      hasOpenAI: true,
+      hasOpencodeZen: true,
+      hasOpencodeGo: false,
+      hasBailianCodingPlan: false,
+      hasMinimax: false,
+      hasZaiCodingPlan: false,
+      hasKimiForCoding: false,
+    }
   }
 
   try {
     const content = readFileSync(omoConfigPath, "utf-8")
     const omoConfig = parseJsonc<Record<string, unknown>>(content)
     if (!omoConfig || typeof omoConfig !== "object") {
-      return { hasOpenAI: true, hasOpencodeZen: true, hasZaiCodingPlan: false, hasKimiForCoding: false }
+      return {
+        hasOpenAI: true,
+        hasOpencodeZen: true,
+        hasOpencodeGo: false,
+        hasBailianCodingPlan: false,
+        hasMinimax: false,
+        hasZaiCodingPlan: false,
+        hasKimiForCoding: false,
+      }
     }
 
     const configStr = JSON.stringify(omoConfig)
     const hasOpenAI = configStr.includes('"openai/')
     const hasOpencodeZen = configStr.includes('"opencode/')
+    const hasOpencodeGo = configStr.includes('"opencode-go/')
+    const hasBailianCodingPlan = configStr.includes('"bailian-coding-plan/')
+    const hasMinimax = configStr.includes('"minimax/')
     const hasZaiCodingPlan = configStr.includes('"zai-coding-plan/')
     const hasKimiForCoding = configStr.includes('"kimi-for-coding/')
 
-    return { hasOpenAI, hasOpencodeZen, hasZaiCodingPlan, hasKimiForCoding }
+    return {
+      hasOpenAI,
+      hasOpencodeZen,
+      hasOpencodeGo,
+      hasBailianCodingPlan,
+      hasMinimax,
+      hasZaiCodingPlan,
+      hasKimiForCoding,
+    }
   } catch {
-    return { hasOpenAI: true, hasOpencodeZen: true, hasZaiCodingPlan: false, hasKimiForCoding: false }
+    return {
+      hasOpenAI: true,
+      hasOpencodeZen: true,
+      hasOpencodeGo: false,
+      hasBailianCodingPlan: false,
+      hasMinimax: false,
+      hasZaiCodingPlan: false,
+      hasKimiForCoding: false,
+    }
   }
 }
 
@@ -44,6 +82,9 @@ export function detectCurrentConfig(): DetectedConfig {
     hasGemini: false,
     hasCopilot: false,
     hasOpencodeZen: true,
+    hasOpencodeGo: false,
+    hasBailianCodingPlan: false,
+    hasMinimax: false,
     hasZaiCodingPlan: false,
     hasKimiForCoding: false,
   }
@@ -68,9 +109,20 @@ export function detectCurrentConfig(): DetectedConfig {
 
   result.hasGemini = plugins.some((p) => p.startsWith("opencode-antigravity-auth"))
 
-  const { hasOpenAI, hasOpencodeZen, hasZaiCodingPlan, hasKimiForCoding } = detectProvidersFromOmoConfig()
+  const {
+    hasOpenAI,
+    hasOpencodeZen,
+    hasOpencodeGo,
+    hasBailianCodingPlan,
+    hasMinimax,
+    hasZaiCodingPlan,
+    hasKimiForCoding,
+  } = detectProvidersFromOmoConfig()
   result.hasOpenAI = hasOpenAI
   result.hasOpencodeZen = hasOpencodeZen
+  result.hasOpencodeGo = hasOpencodeGo
+  result.hasBailianCodingPlan = hasBailianCodingPlan
+  result.hasMinimax = hasMinimax
   result.hasZaiCodingPlan = hasZaiCodingPlan
   result.hasKimiForCoding = hasKimiForCoding
 

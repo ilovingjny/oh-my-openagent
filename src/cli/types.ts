@@ -8,6 +8,9 @@ export interface InstallArgs {
   gemini?: BooleanArg
   copilot?: BooleanArg
   opencodeZen?: BooleanArg
+  opencodeGo?: BooleanArg
+  bailianCodingPlan?: BooleanArg
+  minimax?: BooleanArg
   zaiCodingPlan?: BooleanArg
   kimiForCoding?: BooleanArg
   skipAuth?: boolean
@@ -20,6 +23,9 @@ export interface InstallConfig {
   hasGemini: boolean
   hasCopilot: boolean
   hasOpencodeZen: boolean
+  hasOpencodeGo: boolean
+  hasBailianCodingPlan: boolean
+  hasMinimax: boolean
   hasZaiCodingPlan: boolean
   hasKimiForCoding: boolean
 }
@@ -38,6 +44,9 @@ export interface DetectedConfig {
   hasGemini: boolean
   hasCopilot: boolean
   hasOpencodeZen: boolean
+  hasOpencodeGo: boolean
+  hasBailianCodingPlan: boolean
+  hasMinimax: boolean
   hasZaiCodingPlan: boolean
   hasKimiForCoding: boolean
 }

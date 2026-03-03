@@ -26,7 +26,9 @@ export async function runTuiInstaller(args: InstallArgs, version: string): Promi
 
   if (isUpdate) {
     const initial = detectedToInitialValues(detected)
-    p.log.info(`Existing configuration detected: Claude=${initial.claude}, Gemini=${initial.gemini}`)
+    p.log.info(
+      `Existing configuration detected: Claude=${initial.claude}, OpenCodeGo=${initial.opencodeGo}, Bailian=${initial.bailianCodingPlan}, MiniMax=${initial.minimax}, Gemini=${initial.gemini}`,
+    )
   }
 
   const spinner = p.spinner()
@@ -54,7 +56,13 @@ export async function runTuiInstaller(args: InstallArgs, version: string): Promi
   }
   spinner.stop(`Plugin added to ${color.cyan(pluginResult.configPath)}`)
 
-  if (config.hasGemini) {
+  const needsProviderSetup =
+    config.hasGemini ||
+    config.hasOpencodeGo ||
+    config.hasBailianCodingPlan ||
+    config.hasMinimax
+
+  if (needsProviderSetup) {
     spinner.start("Adding auth plugins (fetching latest versions)")
     const authResult = await addAuthPlugins(config)
     if (!authResult.success) {
@@ -97,7 +105,18 @@ export async function runTuiInstaller(args: InstallArgs, version: string): Promi
     console.log()
   }
 
-  if (!config.hasClaude && !config.hasOpenAI && !config.hasGemini && !config.hasCopilot && !config.hasOpencodeZen) {
+  if (
+    !config.hasClaude &&
+    !config.hasOpenAI &&
+    !config.hasGemini &&
+    !config.hasCopilot &&
+    !config.hasOpencodeZen &&
+    !config.hasOpencodeGo &&
+    !config.hasBailianCodingPlan &&
+    !config.hasMinimax &&
+    !config.hasZaiCodingPlan &&
+    !config.hasKimiForCoding
+  ) {
     p.log.warn("No model providers configured. Using opencode/big-pickle as fallback.")
   }
 
@@ -120,11 +139,28 @@ export async function runTuiInstaller(args: InstallArgs, version: string): Promi
 
   p.outro(color.green("oMoMoMoMo... Enjoy!"))
 
-  if ((config.hasClaude || config.hasGemini || config.hasCopilot) && !args.skipAuth) {
+  if (
+    (
+      config.hasClaude ||
+      config.hasGemini ||
+      config.hasCopilot ||
+      config.hasOpencodeGo ||
+      config.hasBailianCodingPlan ||
+      config.hasMinimax ||
+      config.hasZaiCodingPlan ||
+      config.hasKimiForCoding
+    ) &&
+    !args.skipAuth
+  ) {
     const providers: string[] = []
     if (config.hasClaude) providers.push(`Anthropic ${color.gray("→ Claude Pro/Max")}`)
     if (config.hasGemini) providers.push(`Google ${color.gray("→ OAuth with Antigravity")}`)
     if (config.hasCopilot) providers.push(`GitHub ${color.gray("→ Copilot")}`)
+    if (config.hasOpencodeGo) providers.push(`OpenCode Go ${color.gray("→ opencode-go")}`)
+    if (config.hasBailianCodingPlan) providers.push(`Bailian Coding Plan ${color.gray("→ bailian-coding-plan (mstudio)")}`)
+    if (config.hasMinimax) providers.push(`MiniMax ${color.gray("→ minimax.io")}`)
+    if (config.hasZaiCodingPlan) providers.push(`Z.ai ${color.gray("→ zai-coding-plan")}`)
+    if (config.hasKimiForCoding) providers.push(`Kimi For Coding ${color.gray("→ kimi-for-coding")}`)
 
     console.log()
     console.log(color.bold("Authenticate Your Providers"))

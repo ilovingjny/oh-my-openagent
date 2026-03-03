@@ -188,4 +188,28 @@ describe("transformModelForProvider", () => {
 			expect(result).toBe("gemini-3-flash")
 		})
 	})
+
+	describe("minimax and bailian providers", () => {
+		test("normalizes minimax-m2.5 to MiniMax-M2.5 for minimax provider", () => {
+			const result = transformModelForProvider("minimax", "minimax-m2.5")
+			expect(result).toBe("MiniMax-M2.5")
+		})
+
+		test("normalizes MiniMax-M2.5 case-insensitively for bailian provider", () => {
+			const result = transformModelForProvider("bailian-coding-plan", "MiniMax-M2.5")
+			expect(result).toBe("MiniMax-M2.5")
+		})
+	})
+
+	describe("opencode provider", () => {
+		test("maps minimax-m2.5 to opencode minimax-m2.5-free", () => {
+			const result = transformModelForProvider("opencode", "minimax-m2.5")
+			expect(result).toBe("minimax-m2.5-free")
+		})
+
+		test("maps glm-5 to opencode big-pickle", () => {
+			const result = transformModelForProvider("opencode", "glm-5")
+			expect(result).toBe("big-pickle")
+		})
+	})
 })

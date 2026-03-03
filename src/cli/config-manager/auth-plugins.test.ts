@@ -37,6 +37,9 @@ const testConfig: InstallConfig = {
   hasGemini: true,
   hasCopilot: false,
   hasOpencodeZen: false,
+  hasOpencodeGo: false,
+  hasBailianCodingPlan: false,
+  hasMinimax: false,
   hasZaiCodingPlan: false,
   hasKimiForCoding: false,
 }
