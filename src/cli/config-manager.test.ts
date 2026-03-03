@@ -239,7 +239,7 @@ describe("config-manager ANTIGRAVITY_PROVIDER_CONFIG", () => {
   })
 })
 
-describe.skip("generateOmoConfig - model fallback system (legacy expectations)", () => {
+describe("generateOmoConfig - model fallback system (legacy expectations)", () => {
   test("uses github-copilot sonnet fallback when only copilot available", () => {
     // #given user has only copilot (no max plan)
     const config: InstallConfig = {
@@ -259,8 +259,8 @@ describe.skip("generateOmoConfig - model fallback system (legacy expectations)",
     // #when generating config
     const result = generateOmoConfig(config)
 
-    // #then Sisyphus uses Copilot (OR logic - copilot is in claude-opus-4-6 providers)
-    expect((result.agents as Record<string, { model: string }>).sisyphus.model).toBe("github-copilot/claude-opus-4.6")
+    // #then Sisyphus uses Copilot (copilot is in gpt-5.2 providers)
+    expect((result.agents as Record<string, { model: string }>).sisyphus.model).toBe("github-copilot/gpt-5.2")
   })
 
   test("uses ultimate fallback when no providers configured", () => {
@@ -307,9 +307,9 @@ describe.skip("generateOmoConfig - model fallback system (legacy expectations)",
     const result = generateOmoConfig(config)
 
     // #then librarian should use ZAI model
-    expect((result.agents as Record<string, { model: string }>).librarian.model).toBe("zai-coding-plan/glm-4.7")
-    // #then Sisyphus uses Claude (OR logic)
-    expect((result.agents as Record<string, { model: string }>).sisyphus.model).toBe("anthropic/claude-opus-4-6")
+    expect((result.agents as Record<string, { model: string }>).librarian.model).toBe("zai-coding-plan/glm-5")
+    // #then Sisyphus uses ZAI (zai-coding-plan is in glm-5 entry which comes before claude)
+    expect((result.agents as Record<string, { model: string }>).sisyphus.model).toBe("zai-coding-plan/glm-5")
   })
 
   test("uses native OpenAI models when only ChatGPT available", () => {
@@ -331,8 +331,8 @@ describe.skip("generateOmoConfig - model fallback system (legacy expectations)",
     // #when generating config
     const result = generateOmoConfig(config)
 
-    // #then Sisyphus is omitted (requires all fallback providers)
-    expect((result.agents as Record<string, { model: string }>).sisyphus).toBeUndefined()
+    // #then Sisyphus uses openai (requiresAnyModel, openai available in gpt-5.2 entry)
+    expect((result.agents as Record<string, { model: string }>).sisyphus.model).toBe("openai/gpt-5.2")
     // #then Oracle should use native OpenAI (first fallback entry)
     expect((result.agents as Record<string, { model: string }>).oracle.model).toBe("openai/gpt-5.2")
     // #then multimodal-looker should use native OpenAI (fallback within native tier)

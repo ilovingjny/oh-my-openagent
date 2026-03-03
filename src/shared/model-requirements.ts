@@ -34,7 +34,7 @@ export const AGENT_MODEL_REQUIREMENTS: Record<string, ModelRequirement> = {
       { providers: ["bailian-coding-plan", "minimax", "opencode"], model: "minimax-m2.5" },
       { providers: ["kimi-for-coding"], model: "k2p5" },
     ],
-    requiresProvider: ["openai", "opencode-go", "bailian-coding-plan", "opencode"],
+    requiresProvider: ["openai", "opencode-go", "bailian-coding-plan", "minimax", "kimi-for-coding", "opencode"],
   },
   oracle: {
     fallbackChain: [

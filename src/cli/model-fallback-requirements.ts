@@ -26,11 +26,11 @@ export const CLI_AGENT_MODEL_REQUIREMENTS: Record<string, ModelRequirement> = {
       { providers: ["bailian-coding-plan", "minimax", "opencode"], model: "minimax-m2.5" },
       { providers: ["kimi-for-coding"], model: "k2p5" },
     ],
-    requiresProvider: ["openai", "opencode-go", "bailian-coding-plan", "opencode"],
+    requiresProvider: ["openai", "opencode-go", "bailian-coding-plan", "minimax", "kimi-for-coding", "opencode"],
   },
   oracle: {
     fallbackChain: [
-      { providers: ["openai", "github-copilot"], model: "gpt-5.2", variant: "high" },
+      { providers: ["openai", "github-copilot", "opencode"], model: "gpt-5.2", variant: "high" },
       { providers: ["bailian-coding-plan"], model: "qwen3.5-plus" },
       { providers: ["opencode-go", "bailian-coding-plan", "minimax", "opencode"], model: "minimax-m2.5" },
       { providers: ["kimi-for-coding"], model: "k2p5" },
@@ -96,7 +96,7 @@ export const CLI_AGENT_MODEL_REQUIREMENTS: Record<string, ModelRequirement> = {
   },
   momus: {
     fallbackChain: [
-      { providers: ["openai", "github-copilot"], model: "gpt-5.2", variant: "medium" },
+      { providers: ["openai", "github-copilot", "opencode"], model: "gpt-5.2", variant: "medium" },
       { providers: ["bailian-coding-plan"], model: "qwen3.5-plus" },
       { providers: ["opencode-go", "bailian-coding-plan", "minimax", "opencode"], model: "minimax-m2.5" },
       { providers: ["kimi-for-coding"], model: "k2p5" },

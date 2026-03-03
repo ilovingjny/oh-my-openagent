@@ -16,7 +16,7 @@ export function transformModelForProvider(provider: string, model: string): stri
       .replace(/gemini-3-flash(?!-)/g, "gemini-3-flash-preview")
   }
 
-  if (provider === "minimax" || provider === "bailian-coding-plan" || provider === "opencode-go") {
+  if (provider === "minimax" || provider === "bailian-coding-plan") {
     return model.replace(/^minimax-m2\.5$/i, "MiniMax-M2.5")
   }
 

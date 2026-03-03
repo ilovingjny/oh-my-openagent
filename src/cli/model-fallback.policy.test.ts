@@ -84,4 +84,9 @@ describe("generateModelConfig policy", () => {
 
     expect(result.agents?.sisyphus?.model).toBe("opencode-go/kimi-k2.5")
   })
+
+  test("Hephaestus falls back to glm-5 for opencode-go (intentional)", () => {
+    const result = generateModelConfig(createConfig({ hasOpencodeGo: true }))
+    expect(result.agents?.hephaestus?.model).toBe("opencode-go/glm-5")
+  })
 })

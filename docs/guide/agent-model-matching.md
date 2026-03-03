@@ -83,9 +83,9 @@ These agents are built for GPT's principle-driven style. Their prompts assume au
 
 | Agent | Role | Fallback Chain | Notes |
 |-------|------|----------------|-------|
-| **Hephaestus** | Autonomous deep worker | GPT-5.3 Codex → GLM 5 (opencode-go) → MiniMax M2.5 → Qwen3.5 Plus | Requires GPT or opencode-go/bailian-coding-plan/opencode. See note below. |
-| **Oracle** | Architecture consultant | GPT-5.2 → Gemini 3 Pro → Claude Opus | Read-only high-IQ consultation. |
-| **Momus** | Ruthless reviewer | GPT-5.2 → Claude Opus → Gemini 3 Pro | Verification and plan review. |
+| **Hephaestus** | Autonomous deep worker | GPT-5.3 Codex → Qwen3.5 Plus (bailian) → GLM 5 (opencode-go) → MiniMax M2.5 | Requires GPT or opencode-go/bailian-coding-plan/opencode. See note below. |
+| **Oracle** | Architecture consultant | GPT-5.2 → Qwen3.5 Plus → MiniMax M2.5 → Gemini 3 Pro → Claude Opus | Read-only high-IQ consultation. |
+| **Momus** | Ruthless reviewer | GPT-5.2 → Qwen3.5 Plus → MiniMax M2.5 → Gemini 3 Pro → Claude Opus | Verification and plan review. |
 
 ### Utility Runners → Speed over Intelligence
 

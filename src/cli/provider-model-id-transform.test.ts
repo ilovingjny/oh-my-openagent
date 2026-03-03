@@ -195,9 +195,14 @@ describe("transformModelForProvider", () => {
 			expect(result).toBe("MiniMax-M2.5")
 		})
 
-		test("normalizes MiniMax-M2.5 case-insensitively for bailian provider", () => {
-			const result = transformModelForProvider("bailian-coding-plan", "MiniMax-M2.5")
+		test("normalizes minimax-m2.5 to MiniMax-M2.5 for bailian provider", () => {
+			const result = transformModelForProvider("bailian-coding-plan", "minimax-m2.5")
 			expect(result).toBe("MiniMax-M2.5")
+		})
+
+		test("does NOT capitalize minimax-m2.5 for opencode-go provider", () => {
+			const result = transformModelForProvider("opencode-go", "minimax-m2.5")
+			expect(result).toBe("minimax-m2.5")
 		})
 	})
 

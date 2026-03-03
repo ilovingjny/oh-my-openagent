@@ -25,11 +25,13 @@ describe("model requirements policy", () => {
     }
   })
 
-  test("hephaestus requiresProvider includes OpenAI + OpenCode-go + Bailian + OpenCode", () => {
+  test("hephaestus requiresProvider includes OpenAI + OpenCode-go + Bailian + MiniMax + Kimi + OpenCode", () => {
     expect(AGENT_MODEL_REQUIREMENTS.hephaestus.requiresProvider).toEqual([
       "openai",
       "opencode-go",
       "bailian-coding-plan",
+      "minimax",
+      "kimi-for-coding",
       "opencode",
     ])
   })
@@ -42,11 +44,11 @@ describe("model requirements policy", () => {
   })
 
   test("google and anthropic stay late fallbacks in general chains", () => {
-    const oracleChain = AGENT_MODEL_REQUIREMENTS.oracle.fallbackChain.map((entry) => entry.model)
-    const geminiIndex = oracleChain.findIndex((model) => model.includes("gemini"))
-    const claudeIndex = oracleChain.findIndex((model) => model.includes("claude"))
-    const minimaxIndex = oracleChain.findIndex((model) => model.includes("minimax"))
-    const kimiIndex = oracleChain.findIndex((model) => model.includes("k2p5"))
+    const scribeChain = AGENT_MODEL_REQUIREMENTS.scribe.fallbackChain.map((entry) => entry.model)
+    const geminiIndex = scribeChain.findIndex((model) => model.includes("gemini"))
+    const claudeIndex = scribeChain.findIndex((model) => model.includes("claude"))
+    const minimaxIndex = scribeChain.findIndex((model) => model.includes("minimax"))
+    const kimiIndex = scribeChain.findIndex((model) => model.includes("k2p5"))
 
     expect(minimaxIndex).toBeGreaterThanOrEqual(0)
     expect(kimiIndex).toBeGreaterThanOrEqual(0)
